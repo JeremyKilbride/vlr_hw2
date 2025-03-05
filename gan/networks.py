@@ -372,8 +372,14 @@ class Discriminator(torch.jit.ScriptModule):
         # TODO 1.1: Set up the network layers. You should use the modules
         # you have implemented previously above.
         ##################################################################
-        self.dense = None
-        self.layers = None
+        self.dense = nn.Linear(128,1)
+        self.layers = nn.Sequential(
+            ResBlockDown(128,3,128),
+            ResBlockDown(128,3,128),
+            ResBlock(128,3,128),
+            ResBlock(128,3,128),
+            nn.ReLU()
+        )
         ##################################################################
         #                          END OF YOUR CODE                      #
         ##################################################################
@@ -385,7 +391,9 @@ class Discriminator(torch.jit.ScriptModule):
         # have been passed in. Make sure to sum across the image
         # dimensions after passing x through self.layers.
         ##################################################################
-        pass
+        x=self.layers(x)
+        x=torch.sum(x,[-1,-2])
+        return self.dense(x)
         ##################################################################
         #                          END OF YOUR CODE                      #
         ##################################################################

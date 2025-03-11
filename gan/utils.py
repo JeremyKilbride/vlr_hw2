@@ -2,6 +2,7 @@ import argparse
 import torch
 from cleanfid import fid
 from matplotlib import pyplot as plt
+from torchvision.utils import save_image
 
 
 def save_plot(x, y, xlabel, ylabel, title, filename):
@@ -40,7 +41,25 @@ def interpolate_latent_space(gen, path):
     # 3. Save out an image holding all 100 samples.
     # Use torchvision.utils.save_image to save out the visualization.
     ##################################################################
-    pass
+    sample=torch.zeros((128,))
+    start=-1
+    sample[0]=start
+    sample[0]=start
+    goal=1
+    num_steps=10
+    step_size=(goal-start)/num_steps
+    vectors=[]
+    last_sample=sample
+    for i in range(num_steps):
+        last_sample[0]=i*step_size
+        for j in range(num_steps):
+            last_sample[1] = j * step_size
+            vectors.append(last_sample.clone())
+        
+        vectors = torch.stack(vectors)
+        generated_images = gen.forward_given_samples(vectors)
+        save_image(generated_images, path)
+
     ##################################################################
     #                          END OF YOUR CODE                      #
     ##################################################################

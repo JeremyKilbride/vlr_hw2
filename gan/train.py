@@ -157,7 +157,8 @@ def train_model(
                         # TODO 1.2: Generate samples using the generator.
                         # Make sure they lie in the range [0, 1]!
                         ##################################################################
-                        generated_samples = None
+                        generated_samples = gen()
+                        ##normalize 0 to 1
                         ##################################################################
                         #                          END OF YOUR CODE                      #
                         ##################################################################

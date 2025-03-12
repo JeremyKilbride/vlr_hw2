@@ -28,7 +28,7 @@ class UpSampleConv2D(torch.jit.ScriptModule):
         # (batch, channel, height*upscale_factor, width*upscale_factor)
         # 3. Apply convolution and return output
         ##################################################################
-        x=x.repeat(1,1,int(self.upscale_factor**2))
+        x=x.repeat(1,int(self.upscale_factor**2),1,1)
         x=self.shuffle(x)
         x=self.conv(x)
         return x
@@ -59,9 +59,10 @@ class DownSampleConv2D(torch.jit.ScriptModule):
         # 3. Take the average across dimension 0, apply convolution,
         # and return the output
         ##################################################################
-        
-        x=self.unshuffle(x).unsqueeze(0)
-        x=torch.stack(x.split(int(self.downscale_ratio**2)))
+        x=self.unshuffle(x)
+        chunk_size=x.shape[1]/(self.downscale_ratio**2)
+        x=x.split(int(chunk_size),dim=1)
+        x=torch.stack(x)
         x=x.mean(dim=0)
         x=self.conv(x)
         return x
@@ -298,9 +299,7 @@ class Generator(torch.jit.ScriptModule):
         # been passed in. Don't forget to re-shape the output of the dense
         # layer into an image with the appropriate size!
         ##################################################################
-        print(f"shape {z.shape}")
         z_new=self.dense(z)
-        print(f"shape {z_new.shape}")
         n=z.shape[0]
         z_projection=torch.reshape(z_new,(n,128,4,4))
         x=self.layers(z_projection)
@@ -382,7 +381,7 @@ class Discriminator(torch.jit.ScriptModule):
         ##################################################################
         self.dense = nn.Linear(128,1)
         self.layers = nn.Sequential(
-            ResBlockDown(128,3,128),
+            ResBlockDown(3,3,128),
             ResBlockDown(128,3,128),
             ResBlock(128,3,128),
             ResBlock(128,3,128),

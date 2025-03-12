@@ -46,6 +46,7 @@ class DownSampleConv2D(torch.jit.ScriptModule):
             input_channels, n_filters, kernel_size=kernel_size, padding=padding
         )
         self.downscale_ratio = downscale_ratio
+        self.unshuffle=torch.nn.PixelUnshuffle(self.downscale_ratio)
 
     @torch.jit.script_method
     def forward(self, x:torch.Tensor):
@@ -59,9 +60,8 @@ class DownSampleConv2D(torch.jit.ScriptModule):
         # and return the output
         ##################################################################
         
-        unshuffle=torch.nn.PixelUnshuffle(self.downscale_ratio)
-        x=unshuffle(x).unsqueeze(0)
-        x=x.split(self.downscale_ratio**2)
+        x=self.unshuffle(x).unsqueeze(0)
+        x=torch.stack(x.split(int(self.downscale_ratio**2)))
         x=x.mean(dim=0)
         x=self.conv(x)
         return x
@@ -283,6 +283,10 @@ class Generator(torch.jit.ScriptModule):
             nn.Conv2d(128, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.Tanh()
         )
+        if torch.cuda.is_available():
+            self.dev="cuda"
+        else:
+            self.dev="cpu"
         ##################################################################
         #                          END OF YOUR CODE                      #
         ##################################################################
@@ -294,7 +298,11 @@ class Generator(torch.jit.ScriptModule):
         # been passed in. Don't forget to re-shape the output of the dense
         # layer into an image with the appropriate size!
         ##################################################################
-        z_projection=torch.reshape(self.dense(z),(128,4,4))
+        print(f"shape {z.shape}")
+        z_new=self.dense(z)
+        print(f"shape {z_new.shape}")
+        n=z.shape[0]
+        z_projection=torch.reshape(z_new,(n,128,4,4))
         x=self.layers(z_projection)
         return x
         ##################################################################
@@ -307,7 +315,7 @@ class Generator(torch.jit.ScriptModule):
         # TODO 1.1: Generate n_samples latents and forward through the
         # network.
         ##################################################################
-        samples=torch.randn((n_samples,128))
+        samples=torch.randn((n_samples,128),device=self.dev)
         return self.forward_given_samples(samples)
         ##################################################################
         #                          END OF YOUR CODE                      #

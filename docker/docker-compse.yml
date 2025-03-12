@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  python:
+    container_name: homework2
+    image: homework2:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CPU_PARALLEL=4
+    working_dir: /vlr_hw2
+    entrypoint: /bin/bash
+    shm_size: '10gb'
+    volumes:
+      - ../code:/code
+      - ../runs:/runs
+    network_mode: host
+    stdin_open: true
+    tty: true
+    deploy:
+          resources:
+            reservations:
+              devices:
+                - driver: nvidia
+                  count: all
+                  capabilities: [gpu]
+
+

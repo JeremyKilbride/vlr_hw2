@@ -59,9 +59,9 @@ def interpolate_latent_space(gen, path):
             dev="cuda"
         else:
             dev="cpu"
-        vectors = torch.stack(vectors).to(dev)
-        generated_images = gen.forward_given_samples(vectors)
-        save_image(generated_images, path)
+    vectors = torch.stack(vectors).to(dev)
+    generated_images = gen.forward_given_samples(vectors)
+    save_image(generated_images, path)
 
     ##################################################################
     #                          END OF YOUR CODE                      #

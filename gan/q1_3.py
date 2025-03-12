@@ -17,7 +17,7 @@ def compute_discriminator_loss(
     # Do not use discrim_interp, interp, lamb. They are placeholders
     # for Q1.5.
     ##################################################################
-    loss = -(torch.log(discrim_real)+torch.log(torch.ones_like(discrim_fake)-discrim_fake)).mean()
+    loss = (torch.log(discrim_real)+torch.log(torch.ones_like(discrim_fake)-discrim_fake)).mean()
     ##################################################################
     #                          END OF YOUR CODE                      #
     #################################################################

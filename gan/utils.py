@@ -55,8 +55,11 @@ def interpolate_latent_space(gen, path):
         for j in range(num_steps):
             last_sample[1] = j * step_size
             vectors.append(last_sample.clone())
-        
-        vectors = torch.stack(vectors)
+        if torch.cuda.is_available():
+            dev="cuda"
+        else:
+            dev="cpu"
+        vectors = torch.stack(vectors).to(dev)
         generated_images = gen.forward_given_samples(vectors)
         save_image(generated_images, path)
 

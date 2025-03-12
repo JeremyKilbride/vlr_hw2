@@ -17,6 +17,7 @@ class UpSampleConv2D(torch.jit.ScriptModule):
             input_channels, n_filters, kernel_size=kernel_size, padding=padding
         )
         self.upscale_factor = upscale_factor
+        self.shuffle=torch.nn.PixelShuffle(self.upscale_factor)
 
     @torch.jit.script_method
     def forward(self, x:torch.Tensor):
@@ -27,9 +28,8 @@ class UpSampleConv2D(torch.jit.ScriptModule):
         # (batch, channel, height*upscale_factor, width*upscale_factor)
         # 3. Apply convolution and return output
         ##################################################################
-        x=x.repeat((1,1,self.upscale_factor**2))
-        shuffle=torch.nn.PixelShuffle(self.upscale_factor)
-        x=shuffle(x)
+        x=x.repeat(1,1,int(self.upscale_factor**2))
+        x=self.shuffle(x)
         x=self.conv(x)
         return x
         ##################################################################

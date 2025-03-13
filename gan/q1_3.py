@@ -35,10 +35,10 @@ def compute_generator_loss(discrim_fake):
     ##################################################################
     # TODO 1.3: Implement GAN loss for the generator.
     ##################################################################
-    bce=torch.nn.BCEWithLogitsLoss()
+    bce_gen=torch.nn.BCEWithLogitsLoss()
     # cpu_discrim_fake=discrim_fake.to(device="cpu")   
-    false_labels=torch.ones_like(discrim_fake)
-    loss=bce(discrim_fake,false_labels)
+    true_labels=torch.ones_like(discrim_fake)
+    loss=bce_gen(discrim_fake,true_labels)
     #loss = torch.log(torch.ones_like(discrim_fake)-discrim_fake).mean()
     ##################################################################
     #                          END OF YOUR CODE                      #

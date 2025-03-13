@@ -23,7 +23,7 @@ def compute_discriminator_loss(
     true_labels=torch.ones_like(discrim_real)
     false_labels=torch.zeros_like(discrim_real)
     bce=torch.nn.BCEWithLogitsLoss()
-    loss=bce(discrim_real,true_labels)+bce(discrim_fake,false_labels)
+    loss=(bce(discrim_real,true_labels)+bce(discrim_fake,false_labels))/2
     #loss = -(torch.log(discrim_real)+torch.log(torch.ones_like(discrim_fake)-discrim_fake)).mean()
     ##################################################################
     #                          END OF YOUR CODE                      #
@@ -37,7 +37,7 @@ def compute_generator_loss(discrim_fake):
     ##################################################################
     bce=torch.nn.BCEWithLogitsLoss()
     # cpu_discrim_fake=discrim_fake.to(device="cpu")   
-    false_labels=torch.zeros_like(discrim_fake)
+    false_labels=torch.ones_like(discrim_fake)
     loss=bce(discrim_fake,false_labels)
     #loss = torch.log(torch.ones_like(discrim_fake)-discrim_fake).mean()
     ##################################################################

@@ -107,7 +107,7 @@ def train_model(
                 ##################################################################
                 fake=gen(train_batch.shape[0])
                 discrim_real = disc(train_batch)
-                discrim_fake = disc(fake)
+                discrim_fake_ = disc(fake.detach())
                 ##################################################################
                 #                          END OF YOUR CODE                      #
                 ##################################################################
@@ -123,7 +123,7 @@ def train_model(
                 ##################################################################
 
             discriminator_loss = disc_loss_fn(
-                discrim_real, discrim_fake, discrim_interp, interp, lamb
+                discrim_real, discrim_fake_, discrim_interp, interp, lamb
             )
             
             optim_discriminator.zero_grad(set_to_none=True)

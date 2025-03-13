@@ -20,7 +20,13 @@ def compute_discriminator_loss(
     # loss_pt2 = lambda * E[(|| grad wrt interpolated_data (D(interpolated_data))|| - 1)^2]
     # loss = loss_pt1 + loss_pt2
     ##################################################################
-    loss = None
+    wass_dist=discrim_fake.mean()-discrim_real.mean()
+    grad_interp=torch.autograd.grad(outputs=discrim_interp,inputs=interp,
+                                    grad_outputs=torch.ones_like(discrim_interp),
+                                    create_graph=True,
+                                    retain_graph=True)[0]
+    grad_penalty=lamb*(grad_interp.norm()-1)**2
+    loss = wass_dist+grad_penalty
     ##################################################################
     #                          END OF YOUR CODE                      #
     ##################################################################
@@ -32,7 +38,7 @@ def compute_generator_loss(discrim_fake):
     # TODO 1.5: Implement WGAN-GP loss for generator.
     # loss = - E[D(fake_data)]
     ##################################################################
-    loss = None
+    loss = -discrim_fake.mean()
     ##################################################################
     #                          END OF YOUR CODE                      #
     ##################################################################

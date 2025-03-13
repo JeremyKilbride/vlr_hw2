@@ -106,14 +106,14 @@ def train_model(
                 # 3. Compute the discriminator output on the generated data.
                 ##################################################################
                 fake=gen(train_batch.shape[0])
-                maxes_fake,_=torch.max(fake,dim=0)
-                mins_fake,_=torch.min(fake,dim=0)
-                maxes_batch,_=torch.max(train_batch,dim=0)
-                mins_batch,_=torch.min(train_batch,dim=0)
-                train_batch_scaled=(train_batch-mins_batch)/(maxes_batch-mins_batch)
-                fake_scaled=(fake-mins_fake)/(maxes_fake-mins_fake)
-                discrim_real = disc(train_batch_scaled)
-                discrim_fake_ = disc(fake_scaled.detach())
+                # maxes_fake,_=torch.max(fake,dim=0)
+                # mins_fake,_=torch.min(fake,dim=0)
+                # maxes_batch,_=torch.max(train_batch,dim=0)
+                # mins_batch,_=torch.min(train_batch,dim=0)
+                # train_batch_scaled=(train_batch-mins_batch)/(maxes_batch-mins_batch)
+                # fake_scaled=(fake-mins_fake)/(maxes_fake-mins_fake)
+                discrim_real = disc(train_batch)
+                discrim_fake_ = disc(fake.detach())
                 ##################################################################
                 #                          END OF YOUR CODE                      #
                 ##################################################################

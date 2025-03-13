@@ -116,7 +116,7 @@ def train_model(
                 # TODO 1.5 Compute the interpolated batch and run the
                 # discriminator on it.
                 ###################################################################
-                eps=torch.randn_like(train_batch)
+                eps=torch.randn_like(train_batch,requires_grad=True)
                 interp = eps*train_batch+(torch.ones_like(eps)-eps)*fake.detach()
                 discrim_interp = disc(interp)
                 ##################################################################

@@ -21,11 +21,13 @@ def compute_discriminator_loss(
     # loss = loss_pt1 + loss_pt2
     ##################################################################
     wass_dist=discrim_fake.mean()-discrim_real.mean()
+    batch_sz=discrim_fake.shape[0]
     grad_interp=torch.autograd.grad(outputs=discrim_interp,inputs=interp,
                                     grad_outputs=torch.ones_like(discrim_interp),
                                     create_graph=True,
                                     retain_graph=True)[0]
-    grad_penalty=lamb*(grad_interp.norm()-1)**2
+    grads=grad_interp.view(batch_sz,-1)
+    grad_penalty=lamb*torch.mean(grad_interp.norm()-1)**2
     loss = wass_dist+grad_penalty
     ##################################################################
     #                          END OF YOUR CODE                      #

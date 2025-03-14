@@ -62,7 +62,11 @@ class DownSampleConv2D(torch.jit.ScriptModule):
         x=self.unshuffle(x)
         chunk_size=x.shape[1]/(self.downscale_ratio**2)
         x=x.split(int(chunk_size),dim=1)
-        x=torch.stack(x)
+        #print (f"data type after split {x[0].dtype}")
+        new_x=[]
+        for ten in x:
+            new_x.append(ten.half())
+        x=torch.stack(new_x)
         x=x.mean(dim=0)
         x=self.conv(x)
         return x

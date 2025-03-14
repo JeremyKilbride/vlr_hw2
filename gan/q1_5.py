@@ -28,7 +28,7 @@ def compute_discriminator_loss(
                                     retain_graph=True)[0]
     grads=grad_interp.view(batch_sz,-1)
     norm_grads=grads.norm(2)
-    grad_penalty=lamb*((norm_grads-1)**2)
+    grad_penalty=lamb*((norm_grads-1)**2).mean()
     loss = wass_dist+grad_penalty
     ##################################################################
     #                          END OF YOUR CODE                      #
